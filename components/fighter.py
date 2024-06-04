@@ -1,6 +1,6 @@
 from components.base_component import BaseComponent
 
-class Figher(BaseComponent):
+class Fighter(BaseComponent):
     def __init__(self, health: int, defence: int, power: int) -> None:
         self.max_health = health
         self._health = health

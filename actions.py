@@ -3,7 +3,7 @@ from typing import Optional, Tuple, TYPE_CHECKING
 
 if TYPE_CHECKING:
     from engine import Engine
-    from entity import Entity
+    from entity import Actor, Entity
 
 class Action:
     def __init__(self, entity: Entity) -> None:
@@ -28,6 +28,10 @@ class Action:
 class EscapeAction(Action):
     def perform(self) -> None:
          raise SystemExit
+    
+class WaitAction(Action):
+    def perform(self) -> None:
+        pass
     
 class ActionWithDirection(Action):
     def __init__(self, entity: Entity, delta_x: int, delta_y: int) -> None:
