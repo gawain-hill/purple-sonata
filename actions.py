@@ -54,7 +54,7 @@ class PickupAction(Action):
                 return
             
         raise exceptions.Impossible("There is nothing here to pick up.")
-    
+
 class ItemAction(Action):
     def __init__(
             self, 
@@ -80,12 +80,13 @@ class ItemAction(Action):
         """
         Invoke this items ability, this action will be given to provided context.
         """
+        print("item action perform called")
         self.item.consumable.activate(self)
-
-class EscapeAction(Action):
-    def perform(self) -> None:
-         raise SystemExit
     
+class DropItem(ItemAction):
+    def perform(self) -> None:
+        self.entity.inventory.drop(self.item)
+
 class WaitAction(Action):
     def perform(self) -> None:
         pass

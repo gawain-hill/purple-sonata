@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import copy
-from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING
+from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
 
@@ -22,7 +22,7 @@ class Entity:
 
     def __init__(
             self, 
-            parent: Optional[GameMap] = None,
+            parent: Union[GameMap, Inventory] = None,
             x: int = 0, 
             y: int = 0, 
             char: str = "?",
