@@ -30,6 +30,13 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         self.engine = engine
 
     def handle_events(self) -> None:
+        raise NotImplementedError()
+    
+    def ev_quit(self, event: tcod.event.Quit) -> Action | None:
+        raise SystemExit()
+
+class MainGameEventHandler(EventHandler):
+    def handle_events(self) -> None:
         for event in tcod.event.wait():
             action = self.dispatch(event)
 
@@ -39,9 +46,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             action.perform()
             self.engine.handle_enemy_turns()
             self.engine.update_fov()
-
-    def ev_quit(self, event: tcod.event.Quit) -> Action | None:
-        raise SystemExit()
     
     def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
         action: Optional[Action] = None
@@ -53,5 +57,26 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             action = BumpAction(player, dx, dy)
         elif key in WAIT_KEYS:
             action = WaitAction(player)
+        elif key == tcod.event.KeySym.ESCAPE:
+            action = EscapeAction(player)
 
-        return action         
+        return action
+
+class GameOverEventHandler(EventHandler):
+    def handle_events(self) -> None:
+        for event in tcod.event.wait():
+            action = self.dispatch(event)
+
+            if action is None:
+                continue
+
+            action.perform();    
+
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+        action: Optional[Action] = None
+        key = event.sym
+
+        if key == tcod.event.KeySym.ESCAPE:
+            action = EscapeAction(self.engine.player)
+
+        return action
