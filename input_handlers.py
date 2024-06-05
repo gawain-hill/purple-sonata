@@ -11,6 +11,7 @@ import exceptions
 
 if TYPE_CHECKING:
     from engine import Engine
+    from entity import Item
 
 CURSOR_Y_KEYS = {
     tcod.event.KeySym.UP: -1,
