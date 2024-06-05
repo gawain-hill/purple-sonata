@@ -3,6 +3,8 @@ from __future__ import annotations
 import copy
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING
 
+from render_order import RenderOrder
+
 if TYPE_CHECKING:
     from components.ai import BaseAI
     from components.fighter import Fighter
@@ -25,6 +27,7 @@ class Entity:
             color: Tuple[int, int, int] = (255, 255, 255),
             name: str = "<Unnamed>",
             blocks_movement: bool = False,
+            render_order: RenderOrder = RenderOrder.CORPSE,
     ) -> None:
         self.x = x
         self.y = y
@@ -32,6 +35,7 @@ class Entity:
         self.color = color
         self.name = name
         self.blocks_movement = blocks_movement
+        self.render_order = render_order
         if gamemap:
             gamemap.entities.add(self)
 
@@ -76,7 +80,7 @@ class Actor(Entity):
             color: Tuple[int] = (255, 255, 255),
             name: str = "<Unnamed>", 
             ai_class: Type[BaseAI],
-            figher: Fighter
+            figher: Fighter,
     ) -> None:
         super().__init__(
             x=x, 
@@ -84,7 +88,8 @@ class Actor(Entity):
             char=char, 
             color=color, 
             name=name, 
-            blocks_movement=True # Assumption that all Actors block movement
+            blocks_movement=True, # Assumption that all Actors block movement
+            render_order=RenderOrder.ACTOR,
         )
 
         self.ai: Optional[BaseAI] = ai_class(self)
