@@ -4,7 +4,7 @@ from typing import Optional, TYPE_CHECKING
 
 import tcod
 
-from actions import Action, EscapeAction, BumpAction, WaitAction
+from actions import Action, EscapeAction, BumpAction, WaitAction, PickupAction
 
 import color
 import exceptions
@@ -87,6 +87,8 @@ class MainGameEventHandler(EventHandler):
             action = EscapeAction(player)
         elif key == tcod.event.KeySym.v:
             self.engine.event_handler = HistroyViewer(self.engine)
+        elif key == tcod.event.KeySym.g:
+            action = PickupAction(player)
 
         return action
 
