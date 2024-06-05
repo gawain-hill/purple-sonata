@@ -51,3 +51,18 @@ class Fighter(BaseComponent):
             death_message,
             deth_message_color
         )
+
+    def heal(self, amount: int) -> int:
+        if self.health == self.max_health:
+            return 0
+        
+        new_health = self.health + amount
+
+        if new_health > self.max_health:
+            new_health = self.max_health
+
+        amount_recovered = new_health - self.health
+        return amount_recovered
+    
+    def damage(self, amount: int) -> None:
+        self.health -= amount
