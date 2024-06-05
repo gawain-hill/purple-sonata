@@ -3,6 +3,7 @@ import copy
 import tcod
 
 import entity_factories
+import color
 from engine import Engine
 from procgen import generate_dungeon
 
@@ -36,6 +37,11 @@ def main():
     )
 
     engine.update_fov()
+
+    engine.message_log.add_message(
+        "Hello and welcome, adventurer, to purple sonata!",
+        color.welcome_text,
+    )
     
 
     with tcod.context.new_terminal(
