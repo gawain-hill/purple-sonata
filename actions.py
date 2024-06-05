@@ -6,7 +6,7 @@ if TYPE_CHECKING:
     from entity import Actor, Entity
 
 class Action:
-    def __init__(self, entity: Entity) -> None:
+    def __init__(self, entity: Actor) -> None:
         super().__init__()
         self.entity = entity
 
@@ -34,11 +34,18 @@ class WaitAction(Action):
         pass
     
 class ActionWithDirection(Action):
-    def __init__(self, entity: Entity, delta_x: int, delta_y: int) -> None:
+    def __init__(self, entity: Actor, delta_x: int, delta_y: int) -> None:
         super().__init__(entity)
 
         self.delta_x = delta_x
         self.delta_y = delta_y
+
+    @property
+    def target_actor(self) -> Optional[Actor]:
+        """
+        Returns the actor at this actions destination
+        """
+        return self.engine.game_map.get_actor_at_location(*self.destination_xy)
 
     @property
     def destination_xy(self) -> Tuple[int, int]:
@@ -59,11 +66,19 @@ class ActionWithDirection(Action):
     
 class MeleeAction(ActionWithDirection):
     def perform(self) -> None:
-        target = self.blocking_entity
+        target = self.target_actor
         if not target:
             return # No entity to attack
         
-        print(f"You kick the {target.name}, much to its annoyance!")
+        damage = self.entity.fighter.power - target.fighter.defence
+
+        attack_description = f"{self.entity.name.capitalize()} attacks {target.name}"
+
+        if damage > 0:
+            print(f"{attack_description} for {damage} health points")
+            target.fighter.health -= damage
+        else:
+            print(f"{attack_description} but does no damage")
 
 class MovementAction(ActionWithDirection):
     def perform(self) -> None:
@@ -82,7 +97,7 @@ class MovementAction(ActionWithDirection):
     
 class BumpAction(ActionWithDirection):
     def perform(self) -> None:
-        if self.blocking_entity:
+        if self.target_actor:
             return MeleeAction(self.entity, self.delta_x, self.delta_y).perform()
         else:
             return MovementAction(self.entity, self.delta_x, self.delta_y).perform()
