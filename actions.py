@@ -17,7 +17,7 @@ class Action:
         """
         Returns the engine this action is scoped to.
         """
-        return self.entity.gamemap.engine
+        return self.entity.parent.engine
 
     def perform(self) -> None:
         """
