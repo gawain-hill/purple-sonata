@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from engine import Engine
     from entity import Item
 
-CURSOR_Y_KEYS = {
+CURSOR_Y_KEYS = { 
     tcod.event.KeySym.UP: -1,
     tcod.event.KeySym.DOWN: 1,
     tcod.event.KeySym.PAGEUP: -1,
@@ -54,9 +54,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
             return False
         
         try:
-            if action.perform is None:
-                print("will fail")
-
             action.perform()
         except exceptions.Impossible as exc:
             self.engine.message_log.add_message(exc.args[0], color.impossible)
@@ -65,9 +62,6 @@ class EventHandler(tcod.event.EventDispatch[Action]):
         self.engine.handle_enemy_turns()
         self.engine.update_fov()
         return True
-    
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
-        raise NotImplementedError()
 
     def ev_mousemotion(self, event: tcod.event.MouseMotion) -> None:
         if self.engine.game_map.in_bounds(event.tile.x, event.tile.y):
@@ -86,10 +80,8 @@ class AskUserEventHandler(EventHandler):
 
     def handle_action(self, action: Optional[Action]) -> bool:
         if super().handle_action(action):
-            print("AskUserEventHandler setting event_handler to MainGameEventHandler")
             self.engine.event_handler = MainGameEventHandler(self.engine)
             return True
-        print("AskUserEventHandler did not handle")
         return False
     
     def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
@@ -132,7 +124,7 @@ class InventoryEventHandler(AskUserEventHandler):
 
     TITLE = "<missing title>"
 
-    def on_render(self, console: Console) -> None:
+    def on_render(self, console: tcod.console.Console) -> None:
         """
         Render an inventory menu, which displays the items, and the letter to select them
         will move to a diffirent position based on where the player is located so the player can
@@ -200,7 +192,7 @@ class InventoryActivateHandler(InventoryEventHandler):
     """
     TITLE = "Select an item to use"
 
-    def on_item_selected(self, item: Item) -> Action | None:
+    def on_item_selected(self, item: Item) -> Optional[Action]:
         """
         Return the action for the selected item.
         """
@@ -212,14 +204,14 @@ class InventoryDropHandler(InventoryEventHandler):
     """
     TITLE = "Select an item to drop"
 
-    def on_item_selected(self, item: Item) -> Action | None:
+    def on_item_selected(self, item: Item) -> Optional[Action]:
         """
         Drop this item
         """
         return DropItem(self.engine.player, item)
 
 class MainGameEventHandler(EventHandler): 
-    def ev_keydown(self, event: tcod.event.KeyDown) -> Action | None:
+    def ev_keydown(self, event: tcod.event.KeyDown) -> Optional[Action]:
         action: Optional[Action] = None
         key = event.sym
         player = self.engine.player
