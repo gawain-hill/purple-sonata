@@ -55,7 +55,7 @@ class ConfusionConsumable(Consumable):
         if not self.engine.game_map.visible[action.target_xy]:
             raise Impossible("You cannot target an area that you cannot see.")
         if not target:
-            raise Impossible("Your must select an enemy to target.")
+            raise Impossible("You must select an enemy to target.")
         if target is consumer:
             raise Impossible("You cannot confuse yourself!")
         
@@ -80,20 +80,20 @@ class HealingConsumable(Consumable):
 
         if amount_recovered > 0:
             self.engine.message_log.add_message(
-                f"You consume the {self.parent.name}, and recover {amount_recovered} Health!",
+                f"You consume the {self.parent.name}, and recover {amount_recovered} HP!",
                 color.health_recovered,
             )
             self.consume()
         else:
             raise Impossible(f"Your health is already full.")
 
-class FireballDamage(Consumable):
+class FireballDamageConsumable(Consumable):
     def __init__(self, damage: int, radius: int) -> None:
         self.damage = damage
         self.radius = radius
 
     def get_action(self, consumer: Actor) -> actions.Action | None:
-        self.engine.message_log(
+        self.engine.message_log.add_message(
             "Select a target location.", color.needs_target
         )
         self.engine.event_handler = AreaRangedAttackHandler(
@@ -102,7 +102,7 @@ class FireballDamage(Consumable):
             callback=lambda xy: actions.ItemAction(consumer, self.parent, xy),
         )
         return None
-    
+
     def activate(self, action: actions.ItemAction) -> None:
         target_xy = action.target_xy
 
@@ -141,7 +141,7 @@ class LightningDamageConsumable(Consumable):
                     closest_distance = distance
 
             if target:
-                self.engine.message_log(
+                self.engine.message_log.add_message(
                     f"A lighting bolt strikes the {target.name} with a loud thunder, for {self.damage}!"
                 )
 

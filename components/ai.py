@@ -7,7 +7,6 @@ import numpy as np
 import tcod
 
 from actions import Action, BumpAction, MeleeAction, MovementAction, WaitAction
-from entity import Actor
 
 if TYPE_CHECKING:
     from entity import Actor
@@ -22,8 +21,8 @@ class BaseAI(Action):
 
         If there is no valid path then returns an empty list.
         """
-        cost = np.array(self.entity.parent.tiles["walkable"], dtype=np.int8)
-        for entity in self.entity.parent.entities:
+        cost = np.array(self.entity.gamemap.tiles["walkable"], dtype=np.int8)
+        for entity in self.entity.gamemap.entities:
             # Check that an entity blocks movement and the cost isn't zero (blocking.)
             if entity.blocks_movement and cost[entity.x, entity.y]:
                 # Add to the cost of a blocked position
@@ -58,7 +57,7 @@ class ConfusedEnemy(BaseAI):
         # Revert the API back to the origional state if the effect has
         # run out
         if self.turns_remaining <= 0:
-            self.engine.message_log(
+            self.engine.message_log.add_message(
                 f"The {self.entity.name} is no longer confused."
             )
             self.entity.ai = self.previous_ai

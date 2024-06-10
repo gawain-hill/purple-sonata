@@ -2,7 +2,6 @@ from __future__ import annotations
 from typing import Optional, Tuple, TYPE_CHECKING
 
 import color
-from entity import Actor
 import exceptions
 
 if TYPE_CHECKING:
@@ -19,12 +18,11 @@ class Action:
         """
         Returns the engine this action is scoped to.
         """
-        return self.entity.parent.engine
+        return self.entity.gamemap.engine
 
     def perform(self) -> None:
         """
         Perform this action with the object needed to determin its scope.
-
         This method must be overridden by Action subclasses
         """
         raise NotImplementedError()
@@ -69,18 +67,14 @@ class ItemAction(Action):
         self.target_xy = target_xy
 
     @property
-    def target_actor(self) -> Optional[Action]:
+    def target_actor(self) -> Optional[Actor]:
         """
-        Return the actor at this actions destination
+        Return the actor at this actions destination.
         """
         return self.engine.game_map.get_actor_at_location(*self.target_xy)
-    
-    @property
+
     def perform(self) -> None:
-        """
-        Invoke this items ability, this action will be given to provided context.
-        """
-        print("item action perform called")
+        """Invoke the items ability, this action will be given to provide context."""
         self.item.consumable.activate(self)
     
 class DropItem(ItemAction):

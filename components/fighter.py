@@ -34,11 +34,11 @@ class Fighter(BaseComponent):
     def die(self) -> None:
         if self.engine.player is self.parent:
             death_message = "You died!"
-            deth_message_color = color.player_die
+            death_message_color = color.player_die
             self.engine.event_handler = GameOverEventHandler(self.engine)
         else:
             death_message = f"{self.parent.name} is dead!"
-            deth_message_color = color.enemy_die
+            death_message_color = color.enemy_die
 
         self.parent.char = "%"
         self.parent.color = (191, 0, 0)
@@ -49,7 +49,7 @@ class Fighter(BaseComponent):
 
         self.engine.message_log.add_message(
             death_message,
-            deth_message_color
+            death_message_color
         )
 
     def heal(self, amount: int) -> int:
@@ -62,6 +62,7 @@ class Fighter(BaseComponent):
             new_health = self.max_health
 
         amount_recovered = new_health - self.health
+        self.health = new_health
         return amount_recovered
     
     def damage(self, amount: int) -> None:
