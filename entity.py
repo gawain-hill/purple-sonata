@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import copy
+import math
 from typing import Optional, Tuple, Type, TypeVar, TYPE_CHECKING, Union
 
 from render_order import RenderOrder
@@ -18,7 +19,7 @@ class Entity:
     """
     A generic object to represent players, enemies, items, etc.
     """
-    parent: GameMap
+    parent: Union[GameMap,Inventory]
 
     def __init__(
             self, 
@@ -42,6 +43,11 @@ class Entity:
             self.parent = parent
             parent.entities.add(self)
 
+    @property
+    def gamemap(self) -> GameMap:
+        return self.parent.gamemap
+
+
     def spawn(self: T, gamemap: GameMap, x: int, y: int) -> T:
         """
         Spawn a copy of this instance at the given location
@@ -51,7 +57,6 @@ class Entity:
         clone.y = y
         clone.parent = gamemap
         gamemap.entities.add(clone)
-
         return clone
     
     def place(self, x: int, y: int, gamemap: Optional[GameMap] = None) -> None:
@@ -69,6 +74,12 @@ class Entity:
             self.parent = gamemap
             gamemap.entities.add(self)
 
+    def distance(self, x: int, y: int) -> float:
+        """
+        Return the distance between the current entity and the given (x, y) coordinate.
+        """
+        return math.sqrt((x - self.x) ** 2 + (y - self.y) ** 2)
+
     def move(self, dx: int, dy: int) -> None:
         self.x += dx
         self.y += dy
@@ -83,7 +94,7 @@ class Actor(Entity):
             char: str = "?", 
             color: Tuple[int] = (255, 255, 255),
             name: str = "<Unnamed>", 
-            ai_class: Type[BaseAI],
+            ai_cls: Type[BaseAI],
             figher: Fighter,
             inventory: Inventory,
     ) -> None:
@@ -97,7 +108,7 @@ class Actor(Entity):
             render_order=RenderOrder.ACTOR,
         )
 
-        self.ai: Optional[BaseAI] = ai_class(self)
+        self.ai: Optional[BaseAI] = ai_cls(self)
         self.fighter = figher
         self.fighter.parent = self
 
